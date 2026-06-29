@@ -7,9 +7,8 @@
 // @match        https://www.linkedin.com/in/*
 // @match        https://www.linkedin.com/sales/lead/*
 // @match        https://www.linkedin.com/sales/people/*
-// @grant        GM_setClipboard
-// @grant        GM_addStyle
-// @run-at       document-idle
+// @grant        none
+// @run-at       document-end
 // ==/UserScript==
 
 // ── PARSER (pure function, no browser APIs — also used by Jest tests) ──────────
@@ -71,16 +70,13 @@ function parseApolloBlob(text) {
   }
 
   function copyToClipboard(text) {
-    if (typeof GM_setClipboard !== 'undefined') {
-      GM_setClipboard(text);
-    } else {
-      navigator.clipboard.writeText(text).catch(() => {});
-    }
+    navigator.clipboard.writeText(text).catch(() => {});
   }
 
   // ── STYLES ──────────────────────────────────────────────
   function injectStyles() {
-    GM_addStyle(`
+    const style = document.createElement('style');
+    style.textContent = `
       #linkdm-btn {
         position: fixed; bottom: 24px; right: 24px; z-index: 99999;
         background: #0a66c2; color: #fff; border: none; border-radius: 8px;
@@ -115,7 +111,8 @@ function parseApolloBlob(text) {
         position: absolute; top: 10px; right: 12px; cursor: pointer;
         font-size: 18px; color: #999; background: none; border: none; line-height: 1;
       }
-    `);
+    `;
+    document.head.appendChild(style);
   }
 
   // ── DOM HELPERS ─────────────────────────────────────────
