@@ -14,7 +14,37 @@
 
 // ── PARSER (pure function, no browser APIs — also used by Jest tests) ──────────
 function parseApolloBlob(text) {
-  // implemented in Task 2
+  if (!text || typeof text !== 'string') return null;
+
+  const normalized = text.replace(/\r\n/g, '\n');
+
+  const msg1Match = normalized.match(/Message 1:\s*\n([\s\S]*?)(?=\nMessage 2:)/i);
+  const msg2Match = normalized.match(/Message 2:\s*\n([\s\S]*?)(?=\nInMail|\nInmail)/i);
+  const inmailMatch = normalized.match(/InMail[:\s]*([\s\S]*)$/i);
+
+  const message1 = msg1Match ? msg1Match[1].trim() : null;
+  const message2 = msg2Match ? msg2Match[1].trim() : null;
+
+  let subject = null;
+  let body = null;
+
+  if (inmailMatch) {
+    const raw = inmailMatch[1].trim();
+    const blankIdx = raw.search(/\n\s*\n/);
+
+    if (blankIdx !== -1) {
+      const subjectLine = raw.substring(0, blankIdx).trim();
+      body = raw.substring(blankIdx).trim();
+      subject = subjectLine.replace(/^Subject:\s*/i, '').trim();
+    } else {
+      subject = raw.replace(/^Subject:\s*/i, '').trim();
+      body = '';
+    }
+  }
+
+  if (!message1 && !message2 && !subject) return null;
+
+  return { message1, message2, inmail: { subject, body } };
 }
 
 // ── BROWSER RUNTIME ────────────────────────────────────────────────────────────
