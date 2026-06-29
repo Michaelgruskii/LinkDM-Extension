@@ -1,0 +1,11 @@
+{
+  "name": "linkdm-extension",
+  "version": "1.0.0",
+  "description": "Tampermonkey userscript: parse Apollo LinkedIn message blobs into selectable variants",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
